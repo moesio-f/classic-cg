@@ -1,2 +1,3 @@
-# classic-cg
-Classic Computer Graphics algorithms in C++
+# Classic Computer Graphics Algorithms
+
+Classic Computer Graphics algorithms in C.
