@@ -53,3 +53,7 @@ dkms.conf
 
 # Build directory
 build/
+
+# CCLS cache
+.ccls-cache/
+

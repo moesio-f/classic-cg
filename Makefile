@@ -11,7 +11,7 @@ test: all debug
 # Generate the project files with Ninja
 prepare:
 	@echo "[Makefile] Generating project files..."
-	@cmake -G "Ninja" -B build -S src
+	@cmake -G "Ninja" -DCMAKE_EXPORT_COMPILE_COMMANDS=YES -B build -S src 
 
 # Build all targets with generated files
 compile:
