@@ -1,0 +1,29 @@
+#ifndef VECTORS
+#define VECTORS
+
+typedef enum { POINT, DIRECTION } VectorType;
+
+typedef struct {
+  double *arr;
+  int dims;
+  VectorType type;
+} Vector;
+
+// Initialization/destruction
+Vector *const_vector(int dims, VectorType type, double value);
+Vector *create_vector(int dims, VectorType type, ...);
+void destroy_vector(Vector *vector);
+
+// Utilities
+Vector *copy_vector(Vector *a, Vector *dst);
+void print_vector(Vector *a, char *suffix);
+
+// Operations
+Vector *add_vector(Vector *a, Vector *b, Vector *dst);
+Vector *sub_vector(Vector *a, Vector *b, Vector *dst);
+Vector *scalar_mult_vector(double a, Vector *b, Vector *dst);
+Vector *projection_vector(Vector *a, Vector *b, Vector *dst);
+double dot_product(Vector *a, Vector *b);
+double l2_norm(Vector *a);
+
+#endif
