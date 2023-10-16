@@ -108,12 +108,50 @@ void space_conversion() {
   printf("===================\n");
 }
 
+void camera_file_load() {
+  Camera *camera = load_camera("data/camera/camera_1.txt");
+  char *newline = "\n";
+  printf("======= Camera Parameter Loading =======\n");
+  printf("C = ");
+  print_vector(camera->C, newline);
+
+  printf("N = ");
+  print_vector(camera->N, newline);
+
+  printf("V = ");
+  print_vector(camera->V, newline);
+
+  printf("d = %f\nhx = %f\nhy = %f\n", camera->d, camera->hx, camera->hy);
+
+  printf("===================\n");
+  destroy_camera(camera);
+}
+
+void object_file_load() {
+  Object *object = load_object("data/objects/sample_1.txt");
+  char *newline = "\n";
+  printf("======= Object Parameter Loading =======\n");
+  printf("n_vertices = %d | n_triangles = %d\n", object->n_vertices,
+         object->n_triangles);
+
+  printf("First vertex: ");
+  print_vector(object->vertices, newline);
+
+  printf("Last vertex: ");
+  print_vector(object->vertices + object->n_vertices - 1, newline);
+
+  printf("===================\n");
+  destroy_object(object);
+}
+
 int main(int argc, char *argv[]) {
   vector_nd_operations(2);
   vector_nd_operations(3);
   vector_nd_operations(4);
   matrix_operations();
   space_conversion();
+  camera_file_load();
+  object_file_load();
   sdl_basic_window();
   return 0;
 }

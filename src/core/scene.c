@@ -10,8 +10,29 @@
 Camera *load_camera(char *filename) {
   Camera *camera = (Camera *)malloc(sizeof(Camera));
   FILE *fp = fopen(filename, "r");
-
+  float x, y, z;
   assert(fp != NULL);
+
+  // Reading C
+  fscanf(fp, "C = %f %f %f ", &x, &y, &z);
+  camera->C = create_vector(3, POINT, x, y, z);
+
+  // Reading N
+  fscanf(fp, "N = %f %f %f ", &x, &y, &z);
+  camera->N = create_vector(3, POINT, x, y, z);
+
+  // Reading V
+  fscanf(fp, "V = %f %f %f ", &x, &y, &z);
+  camera->V = create_vector(3, POINT, x, y, z);
+
+  // Reading d, hx and hy
+  fscanf(fp, "d = %f\nhx = %f\n hy = %f", &x, &y, &z);
+  camera->d = x;
+  camera->hx = y;
+  camera->hy = z;
+
+  // Close the opened file
+  fclose(fp);
 
   return camera;
 }
@@ -19,8 +40,51 @@ Camera *load_camera(char *filename) {
 Object *load_object(char *filename) {
   Object *object = (Object *)malloc(sizeof(Object));
   FILE *fp = fopen(filename, "r");
-
   assert(fp != NULL);
+
+  int n_vertices, n_triangles;
+
+  // Readning number of vertices and triangles
+  fscanf(fp, "%d %d ", &n_vertices, &n_triangles);
+  object->n_vertices = n_vertices;
+  object->n_triangles = n_triangles;
+
+  // Allocate vertices and triangles
+  Vector *vertices = (Vector *)malloc(n_vertices * sizeof(Vector));
+  Triangle *triangles = (Triangle *)malloc(n_triangles * sizeof(Triangle));
+
+  // Store vertices
+  for (int i = 0; i < n_vertices; i++) {
+    float x, y, z;
+
+    // Load vertex information
+    fscanf(fp, "%f %f %f ", &x, &y, &z);
+
+    // Assign values
+    vertices[i].dims = 3;
+    vertices[i].type = POINT;
+    vertices[i].arr = (double *)malloc(3 * sizeof(double));
+    vertices[i].arr[0] = x;
+    vertices[i].arr[1] = y;
+    vertices[i].arr[2] = z;
+  }
+
+  // Store triangles
+  for (int i = 0; i < n_triangles; i++) {
+    int tr1, tr2, tr3;
+
+    // Load triangle information
+    fscanf(fp, "%d %d %d ", &tr1, &tr2, &tr3);
+
+    // Assign values
+    triangles[i].vertex_1 = vertices + tr1 - 1;
+    triangles[i].vertex_2 = vertices + tr2 - 1;
+    triangles[i].vertex_3 = vertices + tr3 - 1;
+  }
+
+  // Store in object
+  object->vertices = vertices;
+  object->triangles = triangles;
 
   return object;
 }
@@ -36,9 +100,9 @@ SpaceConverter *get_converter(Camera *camera) {
   double norm_v = l2_norm(orthogonal_v);
   double norm_u = l2_norm(u);
   double norm_n = l2_norm(n);
-  scalar_mult_vector(1 / norm_v, orthogonal_v, orthogonal_v);
-  scalar_mult_vector(1 / norm_u, u, u);
-  scalar_mult_vector(1 / norm_n, n, n);
+  orthogonal_v = scalar_mult_vector(1 / norm_v, orthogonal_v, orthogonal_v);
+  u = scalar_mult_vector(1 / norm_u, u, u);
+  n = scalar_mult_vector(1 / norm_n, n, n);
 
   // Creating conversion matrix
   Matrix *matrix = const_matrix(3, 3, 0.0);
@@ -106,6 +170,15 @@ void destroy_camera(Camera *camera) {
   destroy_vector(camera->N);
   destroy_vector(camera->V);
   free(camera);
+}
+
+void destroy_object(Object *object) {
+  for (int i = 0; i < object->n_vertices; i++) {
+    free(object->vertices[i].arr);
+  }
+  free(object->triangles);
+  free(object->vertices);
+  free(object);
 }
 
 void destroy_converter(SpaceConverter *cvt, bool keep_camera) {

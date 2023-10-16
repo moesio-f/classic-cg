@@ -17,8 +17,9 @@ typedef struct {
 } Triangle;
 
 typedef struct {
-  Vector **vertices;
-  Triangle **triangles;
+  Vector *vertices;
+  Triangle *triangles;
+  int n_vertices, n_triangles;
 } Object;
 
 typedef struct {
@@ -41,6 +42,7 @@ Vector *cvt_projection_to_window(Vector *a, int width, int height);
 
 // Utilities
 void destroy_camera(Camera *camera);
+void destroy_object(Object *object);
 void destroy_converter(SpaceConverter *cvt, bool keep_camera);
 
 #endif
