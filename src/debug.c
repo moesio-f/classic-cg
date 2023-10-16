@@ -1,4 +1,5 @@
 #include "core/matrices.h"
+#include "core/scene.h"
 #include "core/vectors.h"
 #include <SDL.h>
 
@@ -60,6 +61,8 @@ void matrix_operations() {
   printf("Scalar mult: ");
   print_matrix(matrix, newline);
 
+  printf("Determinant: %f\n", determinant(matrix));
+
   Matrix *mult = mult_matrix(matrix, matrix);
   printf("Matrix product: ");
   print_matrix(mult, newline);
@@ -69,11 +72,48 @@ void matrix_operations() {
   printf("===================\n");
 }
 
+void space_conversion() {
+  double c[] = {1.0, 1.0, 2.0};
+  double n[] = {-1.0, -1.0, -1.0};
+  double v[] = {0.0, 0.0, 1.0};
+  double p[] = {1.0, -3.0, -5.0};
+  char newline[] = "\n";
+  Vector C = {c, 3, POINT};
+  Vector N = {n, 3, POINT};
+  Vector V = {v, 3, POINT};
+  Vector P = {p, 3, POINT};
+  Camera camera = {&C, &N, &V, 1.0, 1.0, 1.0};
+  SpaceConverter *cvt = get_converter(&camera);
+
+  printf("======= Space Conversion =======\n");
+  printf("World Coordinates: ");
+  print_vector(&P, newline);
+
+  Vector *P_ = cvt_world_to_camera(&P, cvt);
+  printf("Camera Coordinates: ");
+  print_vector(P_, newline);
+
+  Vector *proj = cvt_camera_to_projection(P_, &camera, true);
+  printf("Projection Coordinates: ");
+  print_vector(proj, newline);
+
+  Vector *win = cvt_projection_to_window(proj, 400, 400);
+  printf("Window Coordinates (400x400): ");
+  print_vector(win, newline);
+
+  // Cleanup
+  destroy_vector(P_);
+  destroy_vector(proj);
+  destroy_converter(cvt, true);
+  printf("===================\n");
+}
+
 int main(int argc, char *argv[]) {
   vector_nd_operations(2);
   vector_nd_operations(3);
   vector_nd_operations(4);
   matrix_operations();
+  space_conversion();
   sdl_basic_window();
   return 0;
 }

@@ -20,8 +20,11 @@ void print_matrix(Matrix *a, char *suffix);
 
 // Operations
 Matrix *add_matrix(Matrix *a, Matrix *b, Matrix *dst);
-Matrix *sub_matrix(Matrix *a, Matrix *b, Matrix *dstr);
+Matrix *sub_matrix(Matrix *a, Matrix *b, Matrix *dst);
 Matrix *mult_matrix(Matrix *a, Matrix *b);
+Vector *mult_matrix_by_vector(Matrix *a, Vector *b);
 Matrix *scalar_mult_matrix(float a, Matrix *b, Matrix *dst);
+Matrix *inverse(Matrix *a, Matrix *dst);
+double determinant(Matrix *a);
 
 #endif

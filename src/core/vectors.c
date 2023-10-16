@@ -97,6 +97,27 @@ Vector *sub_vector(Vector *a, Vector *b, Vector *dst) {
   return dst;
 }
 
+Vector *cross_product(Vector *a, Vector *b, Vector *dst) {
+  assert(a->dims == b->dims && a->dims == 3);
+  dst = maybe_alloc_vector(dst, a->dims, a->type);
+
+  // Obtaining the values to prevent
+  //    undesirable side effects
+  double ax = a->arr[0];
+  double ay = a->arr[1];
+  double az = a->arr[2];
+  double bx = b->arr[0];
+  double by = b->arr[1];
+  double bz = b->arr[2];
+
+  // Calculate cross product
+  dst->arr[0] = ay * bz - az * by;
+  dst->arr[1] = az * bx - ax * bz;
+  dst->arr[2] = ax * by - ay * bx;
+
+  return dst;
+}
+
 Vector *scalar_mult_vector(double a, Vector *b, Vector *dst) {
   dst = maybe_alloc_vector(dst, b->dims, b->type);
 
