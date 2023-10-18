@@ -53,13 +53,43 @@ void draw(Uint32 *buffer, RGBA **canvas, SDL_PixelFormat *format, int width,
   }
 }
 
+void reload(char *camera_name, char *object_name, int width, int height,
+            Object **object_2d, RGBA ***canvas, SDL_Surface *surface,
+            Uint32 *buffer) {
+  if (*object_2d != NULL) {
+    // Destrou previously allocated
+    //  object
+    destroy_object(*object_2d);
+    printf("Objeto anterior removido da memória.\n");
+  }
+
+  if (*canvas != NULL) {
+    // Destroy previously allocated
+    //  canvas
+    destroy_canvas(*canvas, width, height);
+    printf("Rasterização anterior removida da memória.\n");
+  }
+
+  // Initally load the object and canvas
+  *object_2d = load_scene(camera_name, object_name, width, height);
+  printf("Objeto carregado com sucesso.\n");
+
+  *canvas = scanfill(*object_2d, width, height);
+  printf("Rasterização finalizada com sucesso.\n");
+
+  // Paint surface
+  SDL_LockSurface(surface);
+  draw(buffer, *canvas, surface->format, width, height);
+  SDL_UnlockSurface(surface);
+}
+
 int main(int argc, char *argv[]) {
   assert(argc == 3);
   SDL_Window *window;
   SDL_Surface *surface, *win_surface;
   SDL_Event event;
-  Object *object_2d;
-  RGBA **canvas;
+  Object *object_2d = NULL;
+  RGBA **canvas = NULL;
   int width, height;
   Uint32 *buffer, color;
 
@@ -69,25 +99,18 @@ int main(int argc, char *argv[]) {
   // Init SDL video
   SDL_Init(SDL_INIT_VIDEO);
 
-  // Initally load the object and canvas
-  object_2d = load_scene(argv[1], argv[2], width, height);
-  printf("Objeto carregado com sucesso.\n");
-
-  canvas = scanfill(object_2d, width, height);
-  printf("Rasterização finalizada com sucesso.\n");
-
   // Create window and renderer
+  printf("Configurando janela e superfície.\n");
   window = SDL_CreateWindow("Scanline Rendering", SDL_WINDOWPOS_UNDEFINED,
                             SDL_WINDOWPOS_UNDEFINED, width, height, 0);
   win_surface = SDL_GetWindowSurface(window);
   surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32,
                                            SDL_PIXELFORMAT_RGBA32);
   buffer = (Uint32 *)surface->pixels;
+  printf("Janela e superfície configuradas.\n");
 
-  // Paint surface
-  SDL_LockSurface(surface);
-  draw(buffer, canvas, surface->format, width, height);
-  SDL_UnlockSurface(surface);
+  // Reload surface
+  reload(argv[1], argv[2], width, height, &object_2d, &canvas, surface, buffer);
 
   // Main loop
   bool quit = false;
@@ -95,6 +118,11 @@ int main(int argc, char *argv[]) {
     while (SDL_PollEvent(&event)) {
       if (event.type == SDL_QUIT) {
         quit = true;
+      }
+
+      if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_r) {
+        reload(argv[1], argv[2], width, height, &object_2d, &canvas, surface,
+               buffer);
       }
     }
 

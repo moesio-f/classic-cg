@@ -94,7 +94,7 @@ void rasterize_from_bottom(Triangle *t, RGBA **pixels, int w, int h) {
 
   for (int y = (int)*t->vertex_3->y; y >= (int)*t->vertex_1->y; y--) {
     // Scan line by line
-    for (int x = (int)lx; x <= rx; x++) {
+    for (int x = (int)lx; x <= (int)rx; x++) {
       if (x < w && y < h) {
         // Paint interior pixel
         pixels[y][x] = white();
@@ -232,4 +232,14 @@ RGBA **scanfill(Object *object, int width, int height) {
   }
 
   return pixels;
+}
+
+void destroy_canvas(RGBA **canvas, int width, int height) {
+  // Free sub-arrays
+  for (int i = 0; i < height; i++) {
+    free(canvas[i]);
+  }
+
+  // Free pointer
+  free(canvas);
 }

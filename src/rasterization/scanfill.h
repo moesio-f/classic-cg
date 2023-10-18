@@ -10,4 +10,6 @@ typedef struct {
 
 RGBA **scanfill(Object *object, int width, int height);
 
+void destroy_canvas(RGBA **canvas, int width, int height);
+
 #endif
