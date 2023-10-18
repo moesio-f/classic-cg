@@ -123,7 +123,7 @@ SpaceConverter *get_converter(Camera *camera) {
   free(u);
   free(n);
 
-  // Upda
+  // Update
   SpaceConverter *cvt = (SpaceConverter *)malloc(sizeof(SpaceConverter));
   cvt->camera_to_world = matrix;
   cvt->world_to_camera = inverse(matrix, NULL);

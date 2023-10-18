@@ -130,7 +130,7 @@ Matrix *sub_matrix(Matrix *a, Matrix *b, Matrix *dst) {
 
 Matrix *mult_matrix(Matrix *a, Matrix *b) {
   assert_compatible_shape(a, b);
-  Matrix *dst = maybe_alloc_matrix(NULL, a->rows, b->columns);
+  Matrix *dst = const_matrix(a->rows, b->columns, 0.0);
 
   // Apply operation
   for (int i = 0; i < dst->rows; i++) {

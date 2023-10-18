@@ -20,9 +20,24 @@ Vector *const_vector(int dims, VectorType type, double value) {
   vector->dims = dims;
   vector->type = type;
   vector->arr = (double *)malloc(dims * sizeof(double));
+  vector->x = NULL;
+  vector->y = NULL;
+  vector->z = NULL;
 
   for (int i = 0; i < dims; i++) {
-    vector->arr[i] = value;
+    double *ptr = vector->arr + i;
+    *ptr = value;
+    switch (i) {
+    case 0:
+      vector->x = ptr;
+      break;
+    case 1:
+      vector->y = ptr;
+      break;
+    case 2:
+      vector->z = ptr;
+      break;
+    }
   }
 
   return vector;
@@ -35,7 +50,19 @@ Vector *create_vector(int dims, VectorType type, ...) {
   Vector *vector = const_vector(dims, type, 0.0);
   for (int i = 0; i < dims; i++) {
     double value = va_arg(args, double);
-    vector->arr[i] = value;
+    double *ptr = vector->arr + i;
+    *ptr = value;
+    switch (i) {
+    case 0:
+      vector->x = ptr;
+      break;
+    case 1:
+      vector->y = ptr;
+      break;
+    case 2:
+      vector->z = ptr;
+      break;
+    }
   }
 
   va_end(args);
@@ -56,7 +83,19 @@ Vector *copy_vector(Vector *a, Vector *dst) {
   dst->type = a->type;
   dst->arr = (double *)malloc(dst->dims * sizeof(double));
   for (int i = 0; i < dst->dims; i++) {
-    dst->arr[i] = a->arr[i];
+    double *ptr = dst->arr + i;
+    *ptr = a->arr[i];
+    switch (i) {
+    case 0:
+      dst->x = ptr;
+      break;
+    case 1:
+      dst->y = ptr;
+      break;
+    case 2:
+      dst->z = ptr;
+      break;
+    }
   }
 
   return dst;
@@ -101,19 +140,15 @@ Vector *cross_product(Vector *a, Vector *b, Vector *dst) {
   assert(a->dims == b->dims && a->dims == 3);
   dst = maybe_alloc_vector(dst, a->dims, a->type);
 
-  // Obtaining the values to prevent
-  //    undesirable side effects
-  double ax = a->arr[0];
-  double ay = a->arr[1];
-  double az = a->arr[2];
-  double bx = b->arr[0];
-  double by = b->arr[1];
-  double bz = b->arr[2];
-
   // Calculate cross product
-  dst->arr[0] = ay * bz - az * by;
-  dst->arr[1] = az * bx - ax * bz;
-  dst->arr[2] = ax * by - ay * bx;
+  double x = (*a->y) * (*b->z) - (*a->z) * (*b->y);
+  double y = (*a->z) * (*b->x) - (*a->x) * (*b->z);
+  double z = (*a->x) * (*b->y) - (*a->y) * (*b->x);
+
+  // Assign new values
+  *dst->x = x;
+  *dst->y = y;
+  *dst->z = z;
 
   return dst;
 }

@@ -13,18 +13,21 @@ find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
 
 # Add subdirectories
 add_subdirectory(core)
+add_subdirectory(rasterization)
 
-# Add SDL2 debug executable
+# Add executables
 add_executable(sdl2_debug WIN32 debug.c)
+add_executable(render WIN32 scanline_rendering.c)
 
-# Link executable to SDL2 and standard libraries that 
-#   might need link
-target_link_libraries(sdl2_debug PRIVATE SDL2::SDL2)
+# Obtain libraries
+set(SHARED_LIBRARIES SDL2::SDL2)
 find_library(math m)
 if(math)
-    target_link_libraries(sdl2_debug PRIVATE ${math})
+    set(SHARED_LIBRARIES ${SHARED_LIBRARIES} ${math})
 endif()
+set(SHARED_LIBRARIES ${SHARED_LIBRARIES} core rasterization)
 
-# Link executable to sub-libraries from sub-directories
-target_link_libraries(sdl2_debug PRIVATE core)
+# Link executables
+target_link_libraries(sdl2_debug PRIVATE ${SHARED_LIBRARIES})
+target_link_libraries(render PRIVATE ${SHARED_LIBRARIES})
 

@@ -5,6 +5,7 @@ typedef enum { POINT, DIRECTION } VectorType;
 
 typedef struct {
   double *arr;
+  double *x, *y, *z;
   int dims;
   VectorType type;
 } Vector;

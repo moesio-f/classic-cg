@@ -78,10 +78,10 @@ void space_conversion() {
   double v[] = {0.0, 0.0, 1.0};
   double p[] = {1.0, -3.0, -5.0};
   char newline[] = "\n";
-  Vector C = {c, 3, POINT};
-  Vector N = {n, 3, POINT};
-  Vector V = {v, 3, POINT};
-  Vector P = {p, 3, POINT};
+  Vector C = {c, c, c + 1, c + 2, 3, POINT};
+  Vector N = {n, n, n + 1, n + 2, 3, POINT};
+  Vector V = {v, v, v + 1, v + 2, 3, POINT};
+  Vector P = {p, p, p + 1, p + 2, 3, POINT};
   Camera camera = {&C, &N, &V, 1.0, 1.0, 1.0};
   SpaceConverter *cvt = get_converter(&camera);
 
@@ -128,7 +128,7 @@ void camera_file_load() {
 }
 
 void object_file_load() {
-  Object *object = load_object("data/objects/sample_1.txt");
+  Object *object = load_object("data/objects/sample_1.byu");
   char *newline = "\n";
   printf("======= Object Parameter Loading =======\n");
   printf("n_vertices = %d | n_triangles = %d\n", object->n_vertices,
