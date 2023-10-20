@@ -1,2 +1,2 @@
 # Adicionando biblioteca de rasterização
-add_library(rasterization scanfill.c)
+add_library(rendering scanline.c)

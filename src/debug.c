@@ -128,7 +128,7 @@ void camera_file_load() {
 }
 
 void object_file_load() {
-  Object *object = load_object("data/objects/sample_1.byu");
+  Object *object = load_object("data/objects/triangulo.byu");
   char *newline = "\n";
   printf("======= Object Parameter Loading =======\n");
   printf("n_vertices = %d | n_triangles = %d\n", object->n_vertices,

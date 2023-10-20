@@ -1,4 +1,4 @@
-#include "scanfill.h"
+#include "scanline.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

@@ -1,7 +1,7 @@
 #include "core/matrices.h"
 #include "core/scene.h"
 #include "core/vectors.h"
-#include "rasterization/scanfill.h"
+#include "rendering/scanline.h"
 #include <SDL.h>
 #include <assert.h>
 #include <stdbool.h>
