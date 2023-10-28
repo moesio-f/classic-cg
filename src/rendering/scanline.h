@@ -3,13 +3,11 @@
 
 #include "../core/scene.h"
 
-typedef struct {
-  int r, g, b, a;
-} RGBA;
+// Main rasterization function
+Color **rasterize(Object *world_object, Light *light, SpaceConverter *cvt,
+                  int width, int height);
 
-
-RGBA **scanfill(Object *object, int width, int height);
-
-void destroy_canvas(RGBA **canvas, int width, int height);
+// Cleanup
+void destroy_canvas(Color **canvas, int width, int height);
 
 #endif

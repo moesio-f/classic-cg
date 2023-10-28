@@ -6,14 +6,25 @@
 #include <stdbool.h>
 
 typedef struct {
+  int r, g, b, a;
+} Color;
+
+typedef struct {
+  Vector *pl, *kd, *od;
+  Color ambient, local;
+  double ka, ks, eta;
+} Light;
+
+typedef struct {
   Vector *C, *N, *V;
   double d, hx, hy;
 } Camera;
 
 typedef struct {
-  Vector *vertex_1;
-  Vector *vertex_2;
-  Vector *vertex_3;
+  Vector *v1;
+  Vector *v2;
+  Vector *v3;
+  int v1_idx, v2_idx, v3_idx;
 } Triangle;
 
 typedef struct {
@@ -31,6 +42,11 @@ typedef struct {
 // Loading functions
 Camera *load_camera(char *filename);
 Object *load_object(char *filename);
+Light *load_light(char *filename);
+
+// Color manipulation
+Color mult_scalar_color(double scalar, Color c);
+Color add_color(Color a, Color b);
 
 // Conversion matrices
 SpaceConverter *get_converter(Camera *camera);
@@ -43,6 +59,7 @@ Vector *cvt_projection_to_window(Vector *a, int width, int height);
 // Utilities
 void destroy_camera(Camera *camera);
 void destroy_object(Object *object);
+void destroy_light(Light *light);
 void destroy_converter(SpaceConverter *cvt, bool keep_camera);
 
 #endif

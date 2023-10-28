@@ -1,6 +1,7 @@
 #include "core/matrices.h"
 #include "core/scene.h"
 #include "core/vectors.h"
+#include "rendering/math_utils.h"
 #include <SDL.h>
 
 void sdl_basic_window() {
@@ -144,6 +145,54 @@ void object_file_load() {
   destroy_object(object);
 }
 
+void light_file_load() {
+  Light *light = load_light("data/light/basic.lux");
+  char *newline = "\n";
+  printf("======= Light Parameter Loading =======\n");
+  printf("eta = %f, ka = %f, ks = %f\n", light->eta, light->ka, light->ks);
+
+  printf("Kd: ");
+  print_vector(light->kd, newline);
+
+  printf("Od: ");
+  print_vector(light->od, newline);
+
+  printf("Pl: ");
+  print_vector(light->pl, newline);
+
+  printf("Ambient Color = ");
+  printf("R: %d, G: %d, B: %d, A: %d\n", light->ambient.r, light->ambient.g,
+         light->ambient.b, light->ambient.a);
+
+  printf("Local Color = ");
+  printf("R: %d, G: %d, B: %d, A: %d\n", light->local.r, light->local.g,
+         light->local.b, light->local.a);
+
+  printf("===================\n");
+  destroy_light(light);
+}
+
+void barycentric_coordinates() {
+  printf("======= Barycentric Coordinates =======\n");
+  Vector *v1 = create_vector(2, POINT, 3.0, 2.0);
+  Vector *v2 = create_vector(2, POINT, 5.0, 3.0);
+  Vector *v3 = create_vector(2, POINT, 2.0, 4.0);
+  Vector *P = create_vector(2, POINT, 3.0, 3.0);
+  Vector *triangle[3] = {v1, v2, v3};
+  RenderTriangle t = {NULL, NULL, NULL, NULL, triangle};
+  printf("Triangle:\n");
+  print_vector(v1, "\n");
+  print_vector(v2, "\n");
+  print_vector(v3, "\n");
+  printf("P: ");
+  print_vector(P, "\n");
+
+  BarycentricCoordinates coords = get_bcoordinates_from_window(P, &t);
+  printf("alpha=%f, beta=%f, gamma=%f\n", coords.alpha, coords.beta,
+         coords.gamma);
+  printf("===================\n");
+}
+
 int main(int argc, char *argv[]) {
   vector_nd_operations(2);
   vector_nd_operations(3);
@@ -152,6 +201,8 @@ int main(int argc, char *argv[]) {
   space_conversion();
   camera_file_load();
   object_file_load();
+  light_file_load();
+  barycentric_coordinates();
   sdl_basic_window();
   return 0;
 }

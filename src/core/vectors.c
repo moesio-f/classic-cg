@@ -153,6 +153,17 @@ Vector *cross_product(Vector *a, Vector *b, Vector *dst) {
   return dst;
 }
 
+Vector *element_wise_prod(Vector *a, Vector *b, Vector *dst) {
+  assert(a->dims == b->dims);
+  dst = maybe_alloc_vector(dst, a->dims, a->type);
+
+  for (int i = 0; i < dst->dims; i++) {
+    dst->arr[i] = a->arr[i] * b->arr[i];
+  }
+
+  return dst;
+}
+
 Vector *scalar_mult_vector(double a, Vector *b, Vector *dst) {
   dst = maybe_alloc_vector(dst, b->dims, b->type);
 
@@ -180,3 +191,15 @@ double dot_product(Vector *a, Vector *b) {
 }
 
 double l2_norm(Vector *a) { return sqrt(dot_product(a, a)); }
+
+bool vector_equals(Vector *a, Vector *b) {
+  assert(a->dims == b->dims);
+
+  for (int i = 0; i < a->dims; i++) {
+    if (fabs(a->arr[i] - b->arr[i]) > 0.001) {
+      return false;
+    }
+  }
+
+  return true;
+}

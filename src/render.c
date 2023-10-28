@@ -7,75 +7,64 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-Object *load_scene(char *camera_name, char *object_name, int width,
-                   int height) {
-  Camera *camera = load_camera(camera_name);
-  Object *object = load_object(object_name);
-  SpaceConverter *cvt = get_converter(camera);
+typedef struct {
+  Camera *camera;
+  Object *object;
+  Light *light;
+  SpaceConverter *cvt;
+} Scene;
 
-  // Space conversions in the object vertices
-  for (int i = 0; i < object->n_vertices; i++) {
-    // Conversions
-    Vector *camera_space = cvt_world_to_camera(object->vertices + i, cvt);
-    Vector *projection = cvt_camera_to_projection(camera_space, camera, true);
-    Vector *window_space = cvt_projection_to_window(projection, width, height);
-
-    // Free previous allocated array
-    free(object->vertices[i].arr);
-
-    // Set values
-    object->vertices[i] = *window_space;
-
-    // Destroy vectors
-    destroy_vector(camera_space);
-    destroy_vector(projection);
-
-    // Free allocated space for pointer
-    //  but keep the underlying array
-    free(window_space);
-  }
-
-  // Destroy converter and camera
-  destroy_converter(cvt, false);
-
-  return object;
+void destroy_scene(Scene *scene) {
+  destroy_object(scene->object);
+  destroy_light(scene->light);
+  destroy_converter(scene->cvt, false);
+  free(scene);
 }
 
-void draw(Uint32 *buffer, RGBA **canvas, SDL_PixelFormat *format, int width,
+Scene *load_scene(char *camera_name, char *object_name, char *light_name) {
+  Scene *scene = (Scene *)malloc(sizeof(Scene));
+  scene->camera = load_camera(camera_name);
+  scene->object = load_object(object_name);
+  scene->light = load_light(light_name);
+  scene->cvt = get_converter(scene->camera);
+  return scene;
+}
+
+void draw(Uint32 *buffer, Color **canvas, SDL_PixelFormat *format, int width,
           int height) {
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       int offset = y * width + x;
-      RGBA c = canvas[y][x];
+      Color c = canvas[y][x];
       Uint32 color = SDL_MapRGBA(format, c.r, c.g, c.b, c.a);
       buffer[offset] = color;
     }
   }
 }
 
-void reload(char *camera_name, char *object_name, int width, int height,
-            Object **object_2d, RGBA ***canvas, SDL_Surface *surface,
+void reload(char *camera_name, char *object_name, char *light_name, int width,
+            int height, Scene **scene, Color ***canvas, SDL_Surface *surface,
             Uint32 *buffer) {
-  if (*object_2d != NULL) {
-    // Destrou previously allocated
-    //  object
-    destroy_object(*object_2d);
-    printf("Objeto anterior removido da memória.\n");
+  if (*scene != NULL) {
+    // Destroy previously scene
+    destroy_scene(*scene);
+    printf("[main] Cena anterior removida da memória.\n");
   }
 
   if (*canvas != NULL) {
     // Destroy previously allocated
     //  canvas
     destroy_canvas(*canvas, width, height);
-    printf("Rasterização anterior removida da memória.\n");
+    printf("[main] Rasterização anterior removida da memória.\n");
   }
 
   // Initally load the object and canvas
-  *object_2d = load_scene(camera_name, object_name, width, height);
-  printf("Objeto carregado com sucesso.\n");
+  *scene = load_scene(camera_name, object_name, light_name);
+  printf("[main] Cena carregada com sucesso.\n");
 
-  *canvas = scanfill(*object_2d, width, height);
-  printf("Rasterização finalizada com sucesso.\n");
+  *canvas = rasterize((*scene)->object, (*scene)->light, (*scene)->cvt, width,
+                      height);
+  printf("[main] Rasterização finalizada com sucesso.\n");
 
   // Paint surface
   SDL_LockSurface(surface);
@@ -84,33 +73,37 @@ void reload(char *camera_name, char *object_name, int width, int height,
 }
 
 int main(int argc, char *argv[]) {
-  assert(argc == 3);
+  assert(argc == 4 || argc == 6);
   SDL_Window *window;
   SDL_Surface *surface, *win_surface;
   SDL_Event event;
-  Object *object_2d = NULL;
-  RGBA **canvas = NULL;
-  int width, height;
+  Scene *scene = NULL;
+  Color **canvas = NULL;
+  int width = 600;
+  int height = 600;
   Uint32 *buffer, color;
 
-  width = 1280;
-  height = 720;
+  if (argc == 6) {
+    width = atoi(argv[4]);
+    height = atoi(argv[5]);
+  }
 
   // Init SDL video
   SDL_Init(SDL_INIT_VIDEO);
 
   // Create window and renderer
-  printf("Configurando janela e superfície.\n");
+  printf("[main] Configurando janela e superfície.\n");
   window = SDL_CreateWindow("Scanline Rendering", SDL_WINDOWPOS_UNDEFINED,
                             SDL_WINDOWPOS_UNDEFINED, width, height, 0);
   win_surface = SDL_GetWindowSurface(window);
   surface = SDL_CreateRGBSurfaceWithFormat(0, width, height, 32,
                                            SDL_PIXELFORMAT_RGBA32);
   buffer = (Uint32 *)surface->pixels;
-  printf("Janela e superfície configuradas.\n");
+  printf("[main] Janela e superfície configuradas.\n");
 
   // Reload surface
-  reload(argv[1], argv[2], width, height, &object_2d, &canvas, surface, buffer);
+  reload(argv[1], argv[2], argv[3], width, height, &scene, &canvas, surface,
+         buffer);
 
   // Main loop
   bool quit = false;
@@ -121,8 +114,10 @@ int main(int argc, char *argv[]) {
       }
 
       if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_r) {
-        reload(argv[1], argv[2], width, height, &object_2d, &canvas, surface,
-               buffer);
+        printf("[main] === Recarregando cena ===\n");
+        reload(argv[1], argv[2], argv[3], width, height, &scene, &canvas,
+               surface, buffer);
+        printf("[main] === Cena recarregada ===\n");
       }
     }
 

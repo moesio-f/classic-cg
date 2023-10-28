@@ -77,9 +77,12 @@ Object *load_object(char *filename) {
     fscanf(fp, "%d %d %d ", &tr1, &tr2, &tr3);
 
     // Assign values
-    triangles[i].vertex_1 = vertices + tr1 - 1;
-    triangles[i].vertex_2 = vertices + tr2 - 1;
-    triangles[i].vertex_3 = vertices + tr3 - 1;
+    triangles[i].v1_idx = tr1 - 1;
+    triangles[i].v2_idx = tr2 - 1;
+    triangles[i].v3_idx = tr3 - 1;
+    triangles[i].v1 = vertices + triangles[i].v1_idx;
+    triangles[i].v2 = vertices + triangles[i].v2_idx;
+    triangles[i].v3 = vertices + triangles[i].v3_idx;
   }
 
   // Store in object
@@ -87,6 +90,97 @@ Object *load_object(char *filename) {
   object->triangles = triangles;
 
   return object;
+}
+
+Light *load_light(char *filename) {
+  Light *light = (Light *)malloc(sizeof(Light));
+  Vector *aux = NULL;
+  float scalar = 0.0;
+  float x, y, z;
+  FILE *fp = fopen(filename, "r");
+  assert(fp != NULL);
+
+  // Load ambient color
+  fscanf(fp, "Iamb = %d %d %d ", &light->ambient.r, &light->ambient.g,
+         &light->ambient.b);
+  light->ambient.a = 255;
+
+  // Load Ka
+  fscanf(fp, "Ka = %f ", &scalar);
+  light->ka = scalar;
+
+  // Load local color
+  fscanf(fp, "Il = %d %d %d ", &light->local.r, &light->local.g,
+         &light->local.b);
+  light->local.a = 255;
+
+  // Load Pl
+  aux = const_vector(3, POINT, 0.0);
+  fscanf(fp, "Pl = %f %f %f ", &x, &y, &z);
+  aux->arr[0] = x;
+  aux->arr[1] = y;
+  aux->arr[2] = z;
+  light->pl = aux;
+
+  // Load Kd
+  aux = const_vector(3, POINT, 0.0);
+  fscanf(fp, "Kd = %f %f %f ", &x, &y, &z);
+  aux->arr[0] = x;
+  aux->arr[1] = y;
+  aux->arr[2] = z;
+  light->kd = aux;
+
+  // Load Od
+  aux = const_vector(3, POINT, 0.0);
+  fscanf(fp, "Od = %f %f %f ", &x, &y, &z);
+  aux->arr[0] = x;
+  aux->arr[1] = y;
+  aux->arr[2] = z;
+  light->od = aux;
+
+  // Load ks
+  fscanf(fp, "Ks = %f ", &scalar);
+  light->ks = scalar;
+
+  // Load eta
+  fscanf(fp, "eta = %f ", &scalar);
+  light->eta = scalar;
+
+  return light;
+}
+
+Color mult_scalar_color(double scalar, Color c) {
+  int r, g, b;
+
+  // Multiply components
+  r = (int)floor(scalar * c.r);
+  g = (int)floor(scalar * c.g);
+  b = (int)floor(scalar * c.b);
+
+  // Clipt to [0, 255]
+  r = (r > 255) ? 255 : (r < 0 ? 0 : r);
+  g = (g > 255) ? 255 : (g < 0 ? 0 : g);
+  b = (b > 255) ? 255 : (b < 0 ? 0 : b);
+
+  Color new = {r, g, b, c.a};
+  return new;
+}
+
+Color add_color(Color a, Color b) {
+  int r, g, c;
+
+  // Add components
+  r = a.r + b.r;
+  g = a.g + b.g;
+  c = a.b + b.b;
+
+  // Clipt to [0, 255]
+  r = (r > 255) ? 255 : r;
+  g = (g > 255) ? 255 : g;
+  c = (c > 255) ? 255 : c;
+
+  Color new = {r, g, c, a.a};
+  return new;
 }
 
 SpaceConverter *get_converter(Camera *camera) {
@@ -142,19 +236,24 @@ Vector *cvt_world_to_camera(Vector *a, SpaceConverter *cvt) {
   // Free temporary vector
   destroy_vector(tmp);
 
+  assert(isfinite(new->arr[0]));
+  assert(isfinite(new->arr[1]));
+  assert(isfinite(new->arr[2]));
   return new;
 }
 
 Vector *cvt_camera_to_projection(Vector *a, Camera *camera, bool normalize) {
   Vector *new = const_vector(2, POINT, 0.0);
-  new->arr[0] = camera->d *(a->arr[0] / a->arr[2]);
-  new->arr[1] = camera->d *(a->arr[1] / a->arr[2]);
+  new->arr[0] = camera->d *(*a->x / *a->z);
+  new->arr[1] = camera->d *(*a->y / *a->z);
 
   if (normalize) {
     new->arr[0] /= camera->hx;
     new->arr[1] /= camera->hy;
   }
 
+  assert(isfinite(new->arr[0]));
+  assert(isfinite(new->arr[1]));
   return new;
 }
 
@@ -162,6 +261,9 @@ Vector *cvt_projection_to_window(Vector *a, int width, int height) {
   Vector *new = const_vector(2, POINT, 0.0);
   new->arr[0] = floor(width * (a->arr[0] + 1) / 2 + 0.5);
   new->arr[1] = floor(height - (height * (a->arr[1] + 1) / 2) + 0.5);
+
+  assert(isfinite(new->arr[0]));
+  assert(isfinite(new->arr[1]));
   return new;
 }
 
@@ -176,9 +278,19 @@ void destroy_object(Object *object) {
   for (int i = 0; i < object->n_vertices; i++) {
     free(object->vertices[i].arr);
   }
+  for (int i = 0; i < object->n_triangles; i++) {
+    Triangle *t = object->triangles + i;
+  }
   free(object->triangles);
   free(object->vertices);
   free(object);
+}
+
+void destroy_light(Light *light) {
+  destroy_vector(light->pl);
+  destroy_vector(light->kd);
+  destroy_vector(light->od);
+  free(light);
 }
 
 void destroy_converter(SpaceConverter *cvt, bool keep_camera) {
