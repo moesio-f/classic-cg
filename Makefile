@@ -22,3 +22,9 @@ compile:
 debug:
 	@echo "[Makefile] Running debug target..."
 	@./build/sdl2_debug
+
+# Compile for windows
+compile-windows:
+	@echo "[Makefile] Compile for Windows..."
+	@cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=`pwd`/toolchain/win-mingw.cmake -B build-win -S src
+	@cmake --build build-win
