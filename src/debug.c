@@ -3,6 +3,7 @@
 #include "core/vectors.h"
 #include "rendering/math_utils.h"
 #include <SDL.h>
+#include <stdio.h>
 
 void sdl_basic_window() {
   SDL_Window *window;
@@ -206,3 +207,4 @@ int main(int argc, char *argv[]) {
   sdl_basic_window();
   return 0;
 }
+
