@@ -30,4 +30,3 @@ set(SHARED_LIBRARIES ${SHARED_LIBRARIES} core rendering)
 # Link executables
 target_link_libraries(sdl2_debug PRIVATE ${SHARED_LIBRARIES})
 target_link_libraries(render PRIVATE ${SHARED_LIBRARIES})
-

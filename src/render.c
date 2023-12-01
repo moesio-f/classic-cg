@@ -93,8 +93,8 @@ int main(int argc, char *argv[]) {
   int width, height;
   Uint32 *buffer, color;
 
-  width = 1280;
-  height = 720;
+  width = 600;
+  height = 600;
 
   // Init SDL video
   SDL_Init(SDL_INIT_VIDEO);
@@ -134,3 +134,4 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
+
