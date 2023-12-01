@@ -104,7 +104,7 @@ BarycentricCoordinates get_bcoordinates_from_window(Vector *P,
   destroy_vector(v1);
   destroy_vector(v2);
 
-  BarycentricCoordinates coords = {alpha, beta, gamma};
+  BarycentricCoordinates coords = {gamma, beta, alpha};
   return coords;
 }
 

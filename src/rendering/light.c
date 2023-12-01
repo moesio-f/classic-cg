@@ -77,11 +77,11 @@ Color color_from_point(Vector *P, Vector *N, Light *light) {
   scalar_mult_vector(aux, R, R);
 
   // Checks if should discard any component
-  if (dot_product(V, N) < 0) {
+  if (dot_product(V, N) <= 0.001) {
     scalar_mult_vector(-1.0, N, N);
   }
 
-  if (dot_product(N, L) < 0) {
+  if (dot_product(N, L) <= 0.001) {
     discard_specular = true;
     discard_diffuse = true;
   }
