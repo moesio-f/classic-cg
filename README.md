@@ -4,9 +4,9 @@ Esse repositório contém alguns algoritmos clássicos de Computação Gráfica 
 
 ## Quickstart
 
-Para testar os resultados obtidos, basta realizar o download do [executável mais recente](https://github.com/moesio-f/classic-cg/releases) com seu sistema operacional e extrair os arquivos presentes no `zip`. Uma outra opção é compilar o projeto manualmente (necessário o SDL2) utilizando o Makefile e CMake.
+Para testar os resultados obtidos, basta realizar o download do [executável mais recente](https://github.com/moesio-f/classic-cg/releases) com seu sistema operacional (Windows ou Linux) e extrair os arquivos presentes no `zip`. Uma outra opção é compilar o projeto manualmente (necessário o SDL2, CMake e Make) utilizando o Makefile e CMake.
 
-Uma vez realizado o download do executável, podemos testar a pipeline fazendo:
+Uma vez realizado obtido o executável, podemos testar a pipeline de renderização da seguinte forma:
 
 ```console
 # Executando em sistemas Linux-like
@@ -22,7 +22,7 @@ Ao executar as linhas acima, será produzido como resultado a seguinte visualiza
 
 ![](.github/img/1va_maca2.png)
 
-Podemos atualizar os arquivos de câmera (`.txt`) e de objeto (`.byu`) e apertar a tecla `R` para re-executar o processo de renderização.
+Podemos atualizar os arquivos de câmera (`.txt`) e de objeto (`.byu`) e apertar a tecla `R` para reexecutar o processo de renderização.
 
 ## Arquivo de descrição da Câmera
 
