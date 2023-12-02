@@ -57,6 +57,7 @@ RenderTriangle *triangles_from_world_object(Object *world_object,
 
       // Store the pointer in the correct spot
       ti->world[j] = vertex;
+      ti->projection[j] = p;
       ti->camera[j] = c;
       ti->window[j] = w;
 
@@ -142,9 +143,43 @@ RenderTriangle *triangles_from_world_object(Object *world_object,
     destroy_vector(i_center);
   }
 
+  // Cleanup
+  for (int i = 0; i < n_triangles; i++) {
+    destroy_vector(triangle_normals[i]);
+  }
+  free(triangle_normals);
+
   printf("[scanline/entities] Triângulos de renderização carregados.\n");
   return T;
 }
 
 // Destruction
-void destroy_render_triangles(RenderTriangle *triangles) {}
+void destroy_render_triangles(RenderTriangle *triangles, int n_triangles) {
+  // Clear each triangle
+  for (int i = 0; i < n_triangles; i++) {
+    RenderTriangle *ti = triangles + i;
+
+    // Destroy vectors
+    for (int j = 0; j < 3; j++) {
+      destroy_vector(ti->camera[j]);
+      destroy_vector(ti->window[j]);
+      destroy_vector(ti->projection[j]);
+      if (ti->camera_normals[j] != NULL) {
+        // Some RenderTriangles might not be
+        // actual triangles (e.g., liines)
+        // and won't have a normal
+        destroy_vector(ti->camera_normals[j]);
+      }
+    }
+
+    // Free pointers of pointers
+    free(ti->camera);
+    free(ti->camera_normals);
+    free(ti->world);
+    free(ti->projection);
+    free(ti->window);
+  }
+
+  // Free pointer
+  free(triangles);
+}

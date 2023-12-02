@@ -128,7 +128,7 @@ Color **rasterize(Object *world_object, Light *light, SpaceConverter *cvt,
 
   // Cleanup
   destroy_zbuffer(zbuffer, width, height);
-  destroy_render_triangles(triangles);
+  destroy_render_triangles(triangles, world_object->n_triangles);
 
   return pixels;
 }
@@ -168,6 +168,9 @@ void paint(double x, double y, RenderTriangle *T, Color **pixels,
       // Paint interior pixel usint the Phong's model
       //  of reflection and color
       pixels[i][j] = color_from_point(camera_space, N, light);
+
+      // Cleanup
+      destroy_vector(N);
     }
   }
 

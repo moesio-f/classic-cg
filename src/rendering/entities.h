@@ -21,6 +21,6 @@ RenderTriangle *triangles_from_world_object(Object *world_object,
                                             int height);
 
 // Destruction
-void destroy_render_triangles(RenderTriangle *triangles);
+void destroy_render_triangles(RenderTriangle *triangles, int n_triangles);
 
 #endif
