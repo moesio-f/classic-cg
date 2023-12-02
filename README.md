@@ -4,7 +4,7 @@ Esse repositório contém alguns algoritmos clássicos de Computação Gráfica 
 
 ## Quickstart
 
-Para testar os resultados obtidos, basta realizar o download do [executável mais recente](https://github.com/moesio-f/classic-cg/releases) com seu sistema operacional. Uma outra opção é compilar o projeto manualmente (necessário o SDL2) utilizando o Makefile e CMake.
+Para testar os resultados obtidos, basta realizar o download do [executável mais recente](https://github.com/moesio-f/classic-cg/releases) com seu sistema operacional e extrair os arquivos presentes no `zip`. Uma outra opção é compilar o projeto manualmente (necessário o SDL2) utilizando o Makefile e CMake.
 
 Uma vez realizado o download do executável, podemos testar a pipeline fazendo:
 
@@ -30,7 +30,7 @@ O arquivo de descrição da câmera possui os parâmetros da câmera virtual a s
 
 | Parâmetro | Descrição |
 | --- | --- |
-| `C` | vetor (E3), representa o ponto de foco. | 
+| `C` | vetor, representa o ponto de foco. | 
 | `N` | vetor, base ortonormal do sistema. |
 | `V` | vetor, base ortonormal do sistema. |
 | `d` | escalar, define a distância do foco ao plano de vista. |
@@ -67,9 +67,34 @@ Esse é um arquivo que descreve a malha 3D do objeto a ser renderizado. Nele, s�
 
 ## Arquivo de descrição de Iluminação
 
-TODO: adicionar em breve.
+Esse é um arquivo que define os parâmetros de iluminação (ambiente, difusa e especular) para a cena e o objeto 3D. O formato desse arquivo é `.lux` e ele deve conter os seguintes parâmetros:
 
-## Compilando o projeto
+| Parâmetro | Descrição |
+| --- | --- |
+| `Iamb` | vetor, representa a cor da luz ambiente. | 
+| `Ka` | escalar, coeficiente de reflexão ambiental. |
+| `Il` | cor da luz incidente da componente difusa. |
+| `Pl` | vetor, posição da fonte de luz. |
+| `Kd`| vetor, coeficiente de reflexão difusa. |
+| `Od`| vetor, cor difusa da superfície do objeto. |
+| `Ks`| escalar, coeficiente de reflexão especular do objeto. |
+| `eta`| escalar, modela o tamanho do destaque especular. |
+
+
+Um exemplo para esse arquivo é:
+
+```
+Iamb = 100 100 100
+Ka = 0.2
+Il = 127 213 254
+Pl = 60 5 -10
+Kd = 0.5 0.3 0.2
+Od = 0.7 0.5 0.8
+Ks = 0.5
+eta = 1
+```
+
+## Compilando o projeto (Linux)
 
 Também é possível realizar o clone do repositório e compilar o projeto (~15s) para geração do executável. Para realizar a compilação, é necessário:
 
@@ -84,6 +109,9 @@ git clone https://github.com/moesio-f/classic-cg/
 cd classic-cg
 make
 ./build/render data/camera/camera_1.txt data/objects/maca2.byu
+
+# Para realização o cross-compile para windows
+# precisamos do mingw64 e do SDL2 para o mingw64
+# após isso, podemos fazer:
+# make compile-windows
 ```
-
-
