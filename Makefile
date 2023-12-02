@@ -28,3 +28,12 @@ compile-windows:
 	@echo "[Makefile] Compile for Windows..."
 	@cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=`pwd`/toolchain/win-mingw.cmake -B build-win -S src
 	@cmake --build build-win
+
+# Prepare release
+release:
+	@echo "[Makefile] Compile all and zip release..."
+	@make prepare compile
+	@make compile-windows
+	@zip -j cg-any-linux.zip build/render data/camera/* data/objects/* data/light/*
+	@zip -j cg-win32-x64.zip build-win/render.exe build-win/SDL2.dll data/camera/* data/objects/* data/light/*
+
