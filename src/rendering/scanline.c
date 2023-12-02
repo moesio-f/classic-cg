@@ -154,18 +154,21 @@ void paint(double x, double y, RenderTriangle *T, Color **pixels,
   // Check whether this point should be drawn
   bool inside_window = j < w && j >= 0;
   inside_window = inside_window && i < h && i >= 0;
-  bool in_front = z < zbuffer[i][j];
 
-  if (inside_window && in_front) {
-    // Update z-buffer
-    zbuffer[i][j] = z;
+  if (inside_window) {
+    bool in_front = z < zbuffer[i][j];
 
-    // Interpolate normal for this vertex
-    Vector *N = interpolate_normal(&coords, T);
+    if (in_front) {
+      // Update z-buffer
+      zbuffer[i][j] = z;
 
-    // Paint interior pixel usint the Phong's model
-    //  of reflection and color
-    pixels[i][j] = color_from_point(camera_space, N, light);
+      // Interpolate normal for this vertex
+      Vector *N = interpolate_normal(&coords, T);
+
+      // Paint interior pixel usint the Phong's model
+      //  of reflection and color
+      pixels[i][j] = color_from_point(camera_space, N, light);
+    }
   }
 
   // Cleanup
