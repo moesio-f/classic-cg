@@ -11,16 +11,16 @@ Uma vez realizado obtido o executável, podemos testar a pipeline de renderizaç
 ```console
 # Executando em sistemas Linux-like
 # ./render <path/to/camera.txt> </path/to/object.byu>
-./render camera_1.txt maca2.byu
+./render camera_1.txt calice2.byu basic.lux    
 
 # Executando no Windows
 # render.exe <path/to/camera.txt> </path/to/object.byu>
-render.exe camera_1.txt maca2.byu
+render.exe camera_1.txt calice2.byu basic.lux    
 ```
 
 Ao executar as linhas acima, será produzido como resultado a seguinte visualização:
 
-![](.github/img/1va_maca2.png)
+![](.github/img/2va_calice.png)
 
 Podemos atualizar os arquivos de câmera (`.txt`) e de objeto (`.byu`) e apertar a tecla `R` para reexecutar o processo de renderização.
 
