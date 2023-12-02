@@ -113,36 +113,6 @@ RenderTriangle *triangles_from_world_object(Object *world_object,
     }
   }
 
-  // Sort triangles by baricenter
-  for (int i = 0; i < n_triangles - 1; i++) {
-    Vector *min = NULL;
-    Vector *i_center = add_vector(T[i].camera[0], T[i].camera[1], NULL);
-    int t = -1;
-    add_vector(i_center, T[i].camera[2], i_center);
-    scalar_mult_vector(1.0 / 3.0, i_center, i_center);
-
-    for (int j = i + 1; j < n_triangles; j++) {
-      Vector *j_center = add_vector(T[j].camera[0], T[j].camera[1], NULL);
-      add_vector(j_center, T[j].camera[2], j_center);
-      scalar_mult_vector(1.0 / 3.0, j_center, j_center);
-      if (min == NULL || *j_center->z < *min->z) {
-        min = j_center;
-        t = j;
-      } else {
-        destroy_vector(j_center);
-      }
-    }
-
-    if (*min->z < *i_center->z) {
-      RenderTriangle aux = T[i];
-      T[i] = T[t];
-      T[t] = aux;
-    }
-
-    destroy_vector(min);
-    destroy_vector(i_center);
-  }
-
   // Cleanup
   for (int i = 0; i < n_triangles; i++) {
     destroy_vector(triangle_normals[i]);
