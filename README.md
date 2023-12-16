@@ -10,11 +10,11 @@ Uma vez realizado obtido o executável, podemos testar a pipeline de renderizaç
 
 ```console
 # Executando em sistemas Linux-like
-# ./render <path/to/camera.txt> </path/to/object.byu>
+# ./render <path/to/camera.txt> </path/to/object.byu> </path/to/light.lux>
 ./render camera_1.txt calice2.byu basic.lux    
 
 # Executando no Windows
-# render.exe <path/to/camera.txt> </path/to/object.byu>
+# render.exe <path/to/camera.txt> </path/to/object.byu> </path/to/light.lux>
 render.exe camera_1.txt calice2.byu basic.lux    
 ```
 
